@@ -72,3 +72,25 @@ with DAG('data_pipeline_with_quicksight', default_args=default_args, schedule_in
         schema='your_schema',
         table='your_table',
         s3_bucket='your_bucket',
+        s3_key='s3_key',
+        copy_options=['CSV'],
+        aws_conn_id='aws_default',
+    )
+
+    # Tarefa 6: Criar nova ingestão de dados no QuickSight para visualização
+    create_quicksight_ingestion = QuickSightCreateIngestionOperator(
+        task_id='create_quicksight_ingestion',
+        data_set_id='your_dataset_id',
+        ingestion_id='your_ingestion_id',
+        aws_conn_id='aws_default'
+    )
+
+    # Tarefa 7: Dummy task para finalização da DAG
+    end_pipeline = DummyOperator(
+        task_id='end_pipeline'
+    )
+
+    # Definindo a sequência das tarefas
+    determine_data_source >> [upload_to_s3, stream_kinesis] 
+    [upload_to_s3, stream_kinesis] >> run_glue_job >> load_to_redshift >> create_quicksight_ingestion >> end_pipeline
+
