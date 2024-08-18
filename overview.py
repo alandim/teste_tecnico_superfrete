@@ -34,7 +34,7 @@ def process_streaming_data(**kwargs):
             file.write(record['Data'] + '\n')
     # Subir o arquivo processado no S3
 
-with DAG('data_pipeline_with_quicksight', default_args=default_args, schedule_interval='@daily') as dag:
+with DAG('batch_data_pipeline', default_args=default_args, schedule_interval='@daily') as dag:
 
     # Tarefa 1: Verificar a origem dos dados
     determine_data_source = BranchPythonOperator(
