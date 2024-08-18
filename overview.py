@@ -17,8 +17,7 @@ default_args = {
 
 # Função para determinar a origem dos dados
 def check_data_source(**kwargs):
-    # Verificar a existência de dados no S3 ou streaming via Kinesis
-    data_source = kwargs.get('data_source', 's3')  # Valor padrão é 's3'
+    data_source = kwargs.get('data_source', 's3')  
     if data_source == 'streaming':
         return 'process_streaming_data'
     else:
@@ -28,11 +27,9 @@ def check_data_source(**kwargs):
 def process_streaming_data(**kwargs):
     kinesis = KinesisHook(aws_conn_id='aws_default')
     records = kinesis.get_records(stream_name='your_kinesis_stream')
-    # Processar registros de Kinesis e salvar no S3
     with open('/tmp/processed_kinesis_data.txt', 'w') as file:
         for record in records:
             file.write(record['Data'] + '\n')
-    # Subir o arquivo processado no S3
 
 with DAG('batch_data_pipeline', default_args=default_args, schedule_interval='@daily') as dag:
 
